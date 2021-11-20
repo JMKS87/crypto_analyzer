@@ -14,25 +14,11 @@ x-base-app-service: &base-app-service
 services:
     app:
         <<: *base-app-service
-        command: ["gunicorn",  "-b",  "0.0.0.0:5000", "configuration.asgi", "-k", "uvicorn.workers.UvicornWorker"]
-        working_dir: /app/src
-        labels:
-            - "traefik.enable=true"
-            - "traefik.frontend.rule=Host:${DOMAIN}"
-            - "traefik.port=5000"
-            - "traefik.backend.loadbalancer.stickiness=true"
-        restart: unless-stopped
-
-    traefik:
-        image: traefik:1.7
+        command: ["gunicorn",  "-b",  "0.0.0.0:5000", "crypto_analyzer.asgi", "-k", "uvicorn.workers.UvicornWorker"]
+        working_dir: /app
         restart: unless-stopped
         ports:
-            - 80:80
-            - 443:443
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
-            - ./traefik/traefik.toml:/etc/traefik/traefik.toml:ro
-            - acme:/etc/traefik/acme
+            - 5000:5000
 
 volumes:
     acme:
