@@ -1,0 +1,22 @@
+version: "3.6"
+
+x-base-app-service: &base-app-service
+    build:
+        args:
+            UID: ${UID}
+            GID: ${GID}
+        context: ..
+        dockerfile: docker/app/Dockerfile
+    volumes:
+        - ..:/app
+
+services:
+    app:
+        <<: *base-app-service
+        command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+        ports:
+            - "8000:8000"
+
+    db:
+        ports:
+            - "5432:5432"

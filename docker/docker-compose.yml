@@ -1,0 +1,23 @@
+version: "3.6"
+
+
+x-base-app-service: &base-app-service
+    depends_on:
+        - db
+        - redis
+    env_file: ../.env
+    restart: unless-stopped
+
+services:
+    app:
+        <<: *base-app-service
+
+    db:
+        environment:
+            POSTGRES_USER: "${DATABASE_USER}"
+            POSTGRES_PASSWORD: "${DATABASE_PASS}"
+        image: postgres:13.3
+        restart: unless-stopped
+
+    redis:
+      image: redis:6.2
