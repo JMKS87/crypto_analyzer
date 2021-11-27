@@ -9,6 +9,7 @@ from binance import Client
 API_KEY = os.environ.get("BINANCE_API_KEY")
 API_SECRET = os.environ.get("BINANCE_API_SECRET")
 
+
 @dataclass
 class KlineData:
     open_time: int
@@ -25,8 +26,9 @@ class KlineData:
     ignore: str
 
     @classmethod
-    def from_list(cls, l: List) -> 'KlineData':
-        return cls(open_time=l[0],
+    def from_list(cls, l: List) -> "KlineData":
+        return cls(
+            open_time=l[0],
             open=l[1],
             high=l[2],
             low=l[3],
@@ -41,8 +43,6 @@ class KlineData:
         )
 
 
-
-
 @lru_cache(maxsize=1)
 def _get_client() -> Client:
     client = Client(API_KEY, API_SECRET)
@@ -52,17 +52,20 @@ def _get_client() -> Client:
 def get_tickers():
     client = _get_client()
     tickers = client.get_all_tickers()
-    #TODO
+    # TODO
     values = [row["symbol"] for row in tickers]
     return values
 
 
 def get_values(ticker: str, interval: int, from_: datetime, to: datetime) -> List:
-    klines = _get_client().get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, "1 Dec, 2017", "2 Dec, 2017")
-    print('a')
+    klines = _get_client().get_historical_klines(
+        "BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, "1 Dec, 2017", "2 Dec, 2017"
+    )
+    print("a")
+
 
 if __name__ == "__main__":
     get_tickers()
     # get_values(1, 2, 3, 4)
 
-#TODO: CRON-compatible filling of historical data
+# TODO: CRON-compatible filling of historical data

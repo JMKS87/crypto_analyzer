@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 
+
 def hello(request):
-    return HttpResponse('Hello world! Crypto-analyzer in progress!')
+    return HttpResponse("Hello world! Crypto-analyzer in progress!")
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', hello),
+    path("admin/", admin.site.urls),
+    path("", hello),
 ]

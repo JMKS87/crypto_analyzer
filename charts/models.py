@@ -7,7 +7,7 @@ class Exchange(models.Model):
 
 class Ticker(models.Model):
     class Meta:
-        unique_together = (('name', 'exchange'),)
+        unique_together = (("name", "exchange"),)
 
     name = models.CharField(max_length=255, unique=False)
     exchange = models.ForeignKey(to=Exchange, on_delete=models.CASCADE)
@@ -18,7 +18,7 @@ class Ticker(models.Model):
 
 class Chart(models.Model):
     class Meta:
-        unique_together = (('ticker', 'interval', 'timestamp'),)
+        unique_together = (("ticker", "interval", "timestamp"),)
 
     timestamp = models.DateTimeField(null=False)
     end_timestamp = models.DateTimeField(null=True)

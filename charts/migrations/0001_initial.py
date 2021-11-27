@@ -8,54 +8,88 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Exchange',
+            name="Exchange",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Ticker',
+            name="Ticker",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('exchange', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='charts.exchange')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "exchange",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="charts.exchange"
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('name', 'exchange')},
+                "unique_together": {("name", "exchange")},
             },
         ),
         migrations.CreateModel(
-            name='ChartAlarm',
+            name="ChartAlarm",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added', models.DateTimeField(auto_now_add=True)),
-                ('due', models.DateTimeField(default=None, null=True)),
-                ('fired', models.DateTimeField(default=None, null=True)),
-                ('ticker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='charts.ticker')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("added", models.DateTimeField(auto_now_add=True)),
+                ("due", models.DateTimeField(default=None, null=True)),
+                ("fired", models.DateTimeField(default=None, null=True)),
+                (
+                    "ticker",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="charts.ticker"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Chart',
+            name="Chart",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField()),
-                ('end_timestamp', models.DateTimeField(null=True)),
-                ('interval', models.DateTimeField()),
-                ('open', models.FloatField()),
-                ('high', models.FloatField()),
-                ('low', models.FloatField()),
-                ('close', models.FloatField()),
-                ('volume', models.FloatField()),
-                ('ticker', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='charts.ticker')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("timestamp", models.DateTimeField()),
+                ("end_timestamp", models.DateTimeField(null=True)),
+                ("interval", models.DateTimeField()),
+                ("open", models.FloatField()),
+                ("high", models.FloatField()),
+                ("low", models.FloatField()),
+                ("close", models.FloatField()),
+                ("volume", models.FloatField()),
+                (
+                    "ticker",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="charts.ticker"
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('ticker', 'interval', 'timestamp')},
+                "unique_together": {("ticker", "interval", "timestamp")},
             },
         ),
     ]
