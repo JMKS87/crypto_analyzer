@@ -49,11 +49,12 @@ def _get_client() -> Client:
     return client
 
 
-def populate_tickers():
+def get_tickers():
     client = _get_client()
-    prices = client.get_all_tickers()
+    tickers = client.get_all_tickers()
     #TODO
-    print(prices)
+    values = [row["symbol"] for row in tickers]
+    return values
 
 
 def get_values(ticker: str, interval: int, from_: datetime, to: datetime) -> List:
@@ -61,7 +62,7 @@ def get_values(ticker: str, interval: int, from_: datetime, to: datetime) -> Lis
     print('a')
 
 if __name__ == "__main__":
-    # populate_tickers()
-    get_values(1, 2, 3, 4)
+    get_tickers()
+    # get_values(1, 2, 3, 4)
 
 #TODO: CRON-compatible filling of historical data
