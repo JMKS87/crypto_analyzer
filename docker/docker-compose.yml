@@ -21,3 +21,31 @@ services:
 
     redis:
       image: redis:6.2
+      restart: unless-stopped
+
+    flower:
+      image: mher/flower:0.9.5  # 'latest' was not compatible
+      ports:
+          - "5555:5555"
+      environment:
+          - CELERY_BROKER_URL=amqp://rabbitmq:5672
+          - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      depends_on:
+          - redis
+          - rabbitmq
+      restart: unless-stopped
+
+    rabbitmq:
+        image: rabbitmq:3.8
+        restart: unless-stopped
+
+    celery:
+        <<: *base-app-service
+        command: celery -A crypto_analyzer.celery worker --loglevel=$CELERY_WORKER_LOG_LEVEL --autoscale=4,1
+        depends_on:
+            - redis
+            - rabbitmq
+        environment:
+            - CELERY_BROKER_URL=amqp://rabbitmq:5672
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        restart: unless-stopped
