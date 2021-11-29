@@ -2,9 +2,14 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import List
+from typing import List, Iterator, Union
+import logging
 
 from binance import Client
+
+from charts.misc import timing
+
+logger = logging.getLogger(__name__)
 
 API_KEY = os.environ.get("BINANCE_API_KEY")
 API_SECRET = os.environ.get("BINANCE_API_SECRET")
@@ -49,23 +54,29 @@ def _get_client() -> Client:
     return client
 
 
-def get_tickers():
+def get_tickers() -> List[str]:
     client = _get_client()
-    tickers = client.get_all_tickers()
-    # TODO
-    values = [row["symbol"] for row in tickers]
-    return values
+    response = client.get_all_tickers()
+    tickers = [row["symbol"] for row in response]
+    return tickers
 
 
-def get_values(ticker: str, interval: int, from_: datetime, to: datetime) -> List:
+@timing
+def get_values(ticker: str, interval: str = Client.KLINE_INTERVAL_1DAY, from_: Union[datetime, str] = "17 Sep, 2017", to: Union[datetime, str] = "1 Jan, 2100") -> Iterator[KlineData]:
+    # TODO: maybe internal chunking by date of API requests
     klines = _get_client().get_historical_klines(
-        "BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, "1 Dec, 2017", "2 Dec, 2017"
+        "BTCUSDT",
+        interval,
+        from_,
+        to,
     )
-    print("a")
+    for kline in klines:
+        yield KlineData.from_list(kline)
 
 
 if __name__ == "__main__":
-    get_tickers()
-    # get_values(1, 2, 3, 4)
+    logging.basicConfig(level=logging.INFO)
+    # get_tickers()
+    list(get_values("BTCUSDT"))
 
-# TODO: CRON-compatible filling of historical data
+# TODO: CRON-compatible filling of historical data, with granulation and possibly chunking into smaller fragments
