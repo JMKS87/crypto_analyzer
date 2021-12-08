@@ -2,7 +2,7 @@ import logging
 
 from django.core.management import BaseCommand
 
-from charts.tasks import update_binance
+from charts.tasks import populate_binance_tickers
 
 logger = logging.getLogger(__name__)
 
@@ -11,5 +11,5 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         logging.getLogger().setLevel(logging.INFO)
         logger.info("Populating Binance tickers...")
-        update_binance.delay()
+        populate_binance_tickers.delay()
         logger.info("Populating Binance tickers... DONE")

@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path
 
+from charts import views
+
 
 def hello(request):
     return HttpResponse("Hello world! Crypto-analyzer in progress!")
@@ -24,5 +26,7 @@ def hello(request):
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", hello),
+    path("", views.index),
+    path("<str:exchange>/<str:ticker>", views.ticker_view),
+    path("<str:exchange>", views.exchange_view),
 ]

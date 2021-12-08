@@ -63,6 +63,12 @@ def update_values(
     date_start: Optional[datetime] = None,
     date_end: Optional[datetime] = None,
 ) -> None:
+    logger.info(
+        "Updating values for ticker <%s>, exchange <%s>, interval <%s>",
+        ticker,
+        EXCHANGE_NAME,
+        interval,
+    )
     exchange = Exchange.objects.get(name=EXCHANGE_NAME)
     try:
         ticker_object = Ticker.objects.get(exchange=exchange, name=ticker)
@@ -90,4 +96,10 @@ def update_values(
         for k in klines_iterator
     )
     Chart.objects.bulk_create(chart_entries, ignore_conflicts=True)
+    logger.info(
+        "Updating values for ticker <%s>, exchange <%s>, interval <%s>... DONE",
+        ticker,
+        EXCHANGE_NAME,
+        interval,
+    )
     # WIP, still TODO
