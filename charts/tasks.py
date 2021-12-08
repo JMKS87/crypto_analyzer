@@ -1,10 +1,10 @@
 from celery import shared_task
 
-from charts.binance_tasks import _add_binance, _add_binance_tickers, _update_values
+from charts.binance_tasks import add_binance, add_binance_tickers, update_values
 
 
 @shared_task
 def update_binance() -> None:
-    _add_binance()
-    _add_binance_tickers()
-    _update_values()
+    add_binance()
+    add_binance_tickers()
+    # update_values()

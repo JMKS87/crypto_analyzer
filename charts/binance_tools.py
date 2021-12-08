@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import lru_cache
 from typing import List, Iterator, Union
 import logging
@@ -25,7 +25,7 @@ class KlineData:
     volume: str
     close_time: int
     quote_asset_volume: str
-    number_of_trader: int
+    number_of_trades: int
     taker_buy_base_asset_volume: str
     taker_buy_quote_asset_volume: str
     ignore: str
@@ -41,7 +41,7 @@ class KlineData:
             volume=l[5],
             close_time=l[6],
             quote_asset_volume=l[7],
-            number_of_trader=l[8],
+            number_of_trades=l[8],
             taker_buy_base_asset_volume=l[9],
             taker_buy_quote_asset_volume=l[10],
             ignore=l[11],
@@ -62,10 +62,15 @@ def get_tickers() -> List[str]:
 
 
 @timing
-def get_values(ticker: str, interval: str = Client.KLINE_INTERVAL_1DAY, from_: Union[datetime, str] = "17 Sep, 2017", to: Union[datetime, str] = "1 Jan, 2100") -> Iterator[KlineData]:
+def get_values(
+    ticker: str,
+    interval: str = Client.KLINE_INTERVAL_1DAY,
+    from_: Union[datetime, str] = "17 Sep, 2017",
+    to: Union[datetime, str] = "1 Jan, 2100",
+) -> Iterator[KlineData]:
     # TODO: maybe internal chunking by date of API requests
     klines = _get_client().get_historical_klines(
-        "BTCUSDT",
+        ticker,
         interval,
         from_,
         to,
@@ -77,6 +82,7 @@ def get_values(ticker: str, interval: str = Client.KLINE_INTERVAL_1DAY, from_: U
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     # get_tickers()
-    list(get_values("BTCUSDT"))
+    values = list(get_values("BTCUSDT"))
+    print("ready")
 
 # TODO: CRON-compatible filling of historical data, with granulation and possibly chunking into smaller fragments

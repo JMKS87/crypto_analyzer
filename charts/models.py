@@ -23,7 +23,7 @@ class Chart(models.Model):
     timestamp = models.DateTimeField(null=False)
     end_timestamp = models.DateTimeField(null=True)
     ticker = models.ForeignKey(to=Ticker, on_delete=models.CASCADE)
-    interval = models.DateTimeField(null=False)
+    interval = models.DurationField(null=False)
     open = models.FloatField()
     high = models.FloatField()
     low = models.FloatField()
