@@ -20,6 +20,9 @@ services:
         ports:
             - 5001:5000
 
+    celery:
+        <<: *base-app-service
+
 volumes:
     acme:
     staticfiles:
