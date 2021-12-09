@@ -2,11 +2,14 @@ import logging
 
 from django.core.management import BaseCommand
 
+from charts.models import Ticker, Exchange
 from charts.tasks import populate_binance_tickers, update_binance_values
 
 logger = logging.getLogger(__name__)
 
-# make manage.py CMD=update_binance_values
+EXCHANGE_NAME = "binance"
+
+# make manage.py CMD="update_binance_values --tickers=all"
 class Command(BaseCommand):
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -17,8 +20,14 @@ class Command(BaseCommand):
         logging.getLogger().setLevel(logging.INFO)
         logger.info("Scheduling Binance update...")
         kwargs_for_job = {}
-        if kwargs["tickers"]:
-            kwargs_for_job["tickers"] = kwargs["tickers"].split(",")
+        if tickers := kwargs["tickers"]:
+            if tickers == "all":
+                exchange = Exchange.objects.get(name=EXCHANGE_NAME)
+                tickers_objects = Ticker.objects.filter(exchange=exchange).order_by("name")
+                tickers = [t.name for t in tickers_objects]
+            else:
+                tickers = tickers.split(",")
+            kwargs_for_job["tickers"] = tickers
         if kwargs["intervals"]:
             kwargs_for_job["intervals"] = kwargs["intervals"].split(",")
         update_binance_values.delay(**kwargs_for_job)
