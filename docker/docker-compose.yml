@@ -23,17 +23,17 @@ services:
       image: redis:6.2
       restart: unless-stopped
 
-#    flower:
-#      image: mher/flower:0.9.5  # 'latest' was not compatible
-#      ports:
-#          - "5555:5555"
-#      environment:
-#          - CELERY_BROKER_URL=amqp://rabbitmq:5672
-#          - CELERY_RESULT_BACKEND=redis://redis:6379/0
-#      depends_on:
-#          - redis
-#          - rabbitmq
-#      restart: unless-stopped
+    flower:
+      image: leberkaas/flower-armed
+      ports:
+          - "5556:5555"
+      environment:
+          - CELERY_BROKER_URL=amqp://rabbitmq:5672
+          - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      depends_on:
+          - redis
+          - rabbitmq
+      restart: unless-stopped
 
     rabbitmq:
         image: rabbitmq:3.8
