@@ -51,10 +51,19 @@ def add_binance_tickers() -> None:
     Ticker.objects.bulk_create(tickers_entries, ignore_conflicts=True)
 
 
-def _interval_to_timedelta(interval: Union[datetime, str]) -> timedelta:
-    if interval == Client.KLINE_INTERVAL_1DAY:
-        return timedelta(days=1)
-    raise Exception
+def _interval_to_timedelta(interval: str) -> timedelta:
+    """Valid interval units: m, h, d, w, M, eg. 5m, 4h"""
+    if interval.endswith("m"):
+        return timedelta(minutes=int(interval[:-1]))
+    elif interval.endswith("h"):
+        return timedelta(hours=int(interval[:-1]))
+    elif interval.endswith("d"):
+        return timedelta(days=int(interval[:-1]))
+    elif interval.endswith("w"):
+        return timedelta(weeks=int(interval[:-1]))
+    elif interval.endswith("M"):
+        raise NotImplemented("Months requires some complex logic, not needed for now")
+    raise ValueError("Unknown interval: <%s>", interval)
 
 
 def update_values(
