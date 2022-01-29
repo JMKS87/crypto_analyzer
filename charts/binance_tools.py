@@ -51,6 +51,7 @@ class KlineData:
 @lru_cache(maxsize=1)
 def _get_client() -> Client:
     client = Client(API_KEY, API_SECRET)
+    client.session.hooks["response"] = [binance_requests_hook]
     return client
 
 
@@ -79,10 +80,24 @@ def get_values(
         yield KlineData.from_list(kline)
 
 
+def binance_requests_hook(r, *args, **kwargs):
+    quota_key = "x-mbx-used-weight-1m"
+    if quota_key in r.headers:
+        used_quota = int(r.headers[quota_key])
+        if used_quota % 10 == 0:
+            print(used_quota)
+    print(r.status_code)
+    if r.status_code not in range(200, 400):
+        return
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     # get_tickers()
-    values = list(get_values("BTCUSDT"))
+    values = list(get_values("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE))
     print("ready")
+    # client = _get_client()
+    # i = client.get_exchange_info()
+    # print(i)
 
 # TODO: CRON-compatible filling of historical data, with granulation and possibly chunking into smaller fragments

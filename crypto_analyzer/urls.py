@@ -27,6 +27,12 @@ def hello(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index),
-    path("<str:exchange>/<str:ticker>", views.ticker_view),
-    path("<str:exchange>", views.exchange_view),
+    path("tv_api/config", views.tv_api_config),
+    path("tv_api/time", views.tv_api_time),
+    path("tv_api/symbols", views.tv_api_symbols),
+    path("tv_api/history", views.tv_api_history),
+    path("tv_api/search", views.tv_api_search),
+    path("exchange_<str:exchange>/<str:ticker>", views.ticker_view),
+    path("exchange_<str:exchange>", views.exchange_view),
+    path("tv_chart/<str:ticker>", views.tv_chart, name='tv_chart'),
 ]
