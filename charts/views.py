@@ -150,4 +150,4 @@ def tv_api_search(request: HttpRequest) -> HttpResponse:
 
 
 def tv_chart(request: HttpRequest, ticker: str) -> HttpResponse:
-    return render(request, "chart.html", context={'ticker': ticker})
+    return render(request, "chart.html", context={"ticker": ticker})

@@ -34,5 +34,5 @@ urlpatterns = [
     path("tv_api/search", views.tv_api_search),
     path("exchange_<str:exchange>/<str:ticker>", views.ticker_view),
     path("exchange_<str:exchange>", views.exchange_view),
-    path("tv_chart/<str:ticker>", views.tv_chart, name='tv_chart'),
+    path("tv_chart/<str:ticker>", views.tv_chart, name="tv_chart"),
 ]
