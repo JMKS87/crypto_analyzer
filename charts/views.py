@@ -18,6 +18,10 @@ def index(request: HttpRequest) -> HttpResponse:
     return HttpResponse(response)
 
 
+def info(request: HttpRequest) -> HttpResponse:
+    return render(request, "info.html")
+
+
 def ticker_view(request: HttpRequest, exchange: str, ticker: str) -> HttpResponse:
     exchange = exchange.lower()
     ticker = ticker.upper()

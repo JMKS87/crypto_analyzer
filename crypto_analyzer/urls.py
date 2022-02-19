@@ -27,6 +27,7 @@ def hello(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index),
+    path("info", views.info),
     path("tv_api/config", views.tv_api_config),
     path("tv_api/time", views.tv_api_time),
     path("tv_api/symbols", views.tv_api_symbols),
