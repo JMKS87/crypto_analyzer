@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 
 from binance import Client
+from django.utils.timezone import make_aware
 
 from charts import binance_tools
 from charts.binance_tools import get_values
@@ -94,8 +95,8 @@ def update_values(
         Chart(
             ticker=ticker_object,
             interval=_interval_to_timedelta(interval),
-            timestamp=round_time(datetime.fromtimestamp(k.open_time / 1000)),
-            end_timestamp=round_time(datetime.fromtimestamp(k.close_time / 1000)),
+            timestamp=make_aware(round_time(datetime.fromtimestamp(k.open_time / 1000))),
+            end_timestamp=make_aware(round_time(datetime.fromtimestamp(k.close_time / 1000))),
             open=float(k.open),
             high=float(k.high),
             low=float(k.low),
@@ -104,7 +105,11 @@ def update_values(
         )
         for k in klines_iterator
     )
-    Chart.objects.bulk_create(chart_entries, ignore_conflicts=True)
+    Chart.objects.bulk_update_or_create(
+        chart_entries,
+        update_fields=["open", "high", "low", "close", "volume"],
+        match_field=("ticker", "interval", "timestamp"),
+    )
     logger.info(
         "Updating values for ticker <%s>, exchange <%s>, interval <%s>... DONE",
         ticker,

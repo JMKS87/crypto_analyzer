@@ -1,3 +1,4 @@
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 from django.db import models
 
 
@@ -19,6 +20,8 @@ class Ticker(models.Model):
 class Chart(models.Model):
     class Meta:
         unique_together = (("ticker", "interval", "timestamp"),)
+
+    objects = BulkUpdateOrCreateQuerySet.as_manager()
 
     timestamp = models.DateTimeField(null=False)
     end_timestamp = models.DateTimeField(null=True)

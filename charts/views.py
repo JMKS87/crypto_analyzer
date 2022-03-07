@@ -32,7 +32,7 @@ def ticker_view(request: HttpRequest, exchange: str, ticker: str) -> HttpRespons
         return HttpResponse("Sorry, no data")
     response = "Last values: <br>"
     for value in values:
-        response += f"{value.timestamp}: {value.open}<br>"
+        response += f"{value.timestamp}: {value.close}<br>"
     chart_url = reverse("tv_chart", kwargs={"ticker": ticker})
     response += f"<br>Chart: <br> <a href='{chart_url}'>click</a>"
     return HttpResponse(response)
