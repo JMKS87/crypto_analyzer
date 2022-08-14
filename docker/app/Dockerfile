@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.10-alpine
 
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev build-base
 
@@ -14,6 +14,10 @@ RUN addgroup -S appuser && adduser -S appuser -G appuser
 WORKDIR /app
 
 RUN mkdir -p django_cache && chown appuser:appuser django_cache
+
+COPY --chown=appuser:appuser pip.conf pip.conf
+RUN export PIP_CONFIG_FILE=/app/pip.conf
+
 
 COPY --chown=appuser:appuser requirements.txt requirements.txt
 RUN pip install -r requirements.txt
