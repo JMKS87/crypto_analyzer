@@ -11,7 +11,7 @@ x-base-app-service: &base-app-service
 services:
     app:
         <<: *base-app-service
-        container_name: app
+        container_name: ca_app
 
     db:
         environment:
@@ -19,12 +19,12 @@ services:
             POSTGRES_PASSWORD: "${DATABASE_PASS}"
         image: postgres:13.3
         restart: unless-stopped
-        container_name: db
+        container_name: ca_db
 
     redis:
       image: redis:6.2
       restart: unless-stopped
-      container_name: redis
+      container_name: ca_redis
 
     flower:
       image: leberkaas/flower-armed
@@ -37,12 +37,12 @@ services:
           - redis
           - rabbitmq
       restart: unless-stopped
-      container_name: flower
+      container_name: ca_flower
 
     rabbitmq:
         image: rabbitmq:3.8
         restart: unless-stopped
-        container_name: rabbit
+        container_name: ca_rabbit
 
     celery:
         <<: *base-app-service
@@ -53,11 +53,11 @@ services:
         environment:
             - CELERY_BROKER_URL=amqp://rabbitmq:5672
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
-        container_name: celery
+        container_name: ca_celery
         restart: unless-stopped
 
     scheduler:
         <<: *base-app-service
         command: python -m crypto_analyzer.scheduler
-        container_name: scheduler
+        container_name: ca_scheduler
         restart: unless-stopped
