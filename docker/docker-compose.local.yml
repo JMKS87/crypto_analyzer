@@ -23,3 +23,6 @@ services:
 
     celery:
         <<: *base-app-service
+
+    scheduler:
+        <<: *base-app-service
