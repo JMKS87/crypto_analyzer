@@ -7,14 +7,29 @@ class Exchange(models.Model):
 
 
 class Ticker(models.Model):
+    SPOT = 'spot'
+    FUTURES = 'futures'
+    TICKER_TYPE_CHOICES = (
+        (SPOT, 'spot'),
+        (FUTURES, 'futures'),
+    )
+
     class Meta:
-        unique_together = (("name", "exchange"),)
+        unique_together = (("name", "exchange", "type"),)
 
     name = models.CharField(max_length=255, unique=False)
     exchange = models.ForeignKey(to=Exchange, on_delete=models.CASCADE)
+    type = models.CharField(
+        max_length=20,
+        choices=TICKER_TYPE_CHOICES,
+        default=SPOT,
+    )
 
     def __str__(self) -> str:
-        return f"<{self.name}> on <({self.exchange})>"
+        rv = f"<{self.name}> on <({self.exchange})>"
+        # if self.type != TickerType.SPOT:
+        #     rv += f", type: {self.type}"
+        return rv
 
 
 class Chart(models.Model):

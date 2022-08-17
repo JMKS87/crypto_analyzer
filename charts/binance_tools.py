@@ -62,21 +62,19 @@ def get_tickers() -> List[str]:
     return tickers
 
 
-@timing
 def get_values(
     ticker: str,
     interval: str = Client.KLINE_INTERVAL_1DAY,
     from_: Union[datetime, str] = "17 Sep, 2017",
     to: Union[datetime, str] = "1 Jan, 2100",
 ) -> Iterator[KlineData]:
-    # TODO: maybe internal chunking by date of API requests
-    klines = _get_client().get_historical_klines(
+    klines_generator = _get_client().get_historical_klines_generator(
         ticker,
         interval,
         from_,
         to,
     )
-    for kline in klines:
+    for kline in klines_generator:
         yield KlineData.from_list(kline)
 
 
@@ -85,19 +83,24 @@ def binance_requests_hook(r, *args, **kwargs):
     if quota_key in r.headers:
         used_quota = int(r.headers[quota_key])
         if used_quota % 10 == 0:
-            print(used_quota)
-    print(r.status_code)
-    if r.status_code not in range(200, 400):
-        return
+            logger.info(f"Binance quota: {used_quota}")
+
+
+@timing
+def fiddling():
+    values = list(get_values("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, from_="17 Sep, 2017", to="20 Oct, 2017"))
+    print(len(values))
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    fiddling()
     # get_tickers()
-    values = list(get_values("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE))
-    print("ready")
     # client = _get_client()
     # i = client.get_exchange_info()
     # print(i)
+    # futures_mark_price.lastFundingRate is a PREDICTED funding
+    # resp = (_get_client().futures_mark_price(symbol="BTCUSDT"))
+    # print(resp)
 
 # TODO: CRON-compatible filling of historical data, with granulation and possibly chunking into smaller fragments
