@@ -10,8 +10,8 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 
-		<script type="text/javascript" src="{% static 'charting_library/charting_library.standalone.js' %}"></script>
-		<script type="text/javascript" src="{% static 'datafeeds/udf/dist/bundle.js' %}"></script>
+		<script type="text/javascript" src="{% static 'charting_library/charting_library/charting_library.standalone.js' %}"></script>
+		<script type="text/javascript" src="{% static 'charting_library/datafeeds/udf/dist/bundle.js' %}"></script>
 
 		<script type="text/javascript">
 
@@ -36,7 +36,7 @@
 					{#datafeed: new Datafeeds.UDFCompatibleDatafeed("http://0.0.0.0:8000/tv_api"),#}
 					datafeed: new Datafeeds.UDFCompatibleDatafeed("/tv_api"),
 					{#library_path: "charting_library/",#}
-					library_path: "{% static 'charting_library/' %}",
+					library_path: "{% static 'charting_library/charting_library/' %}",
 					locale: getParameterByName('lang') || "en",
 
 					disabled_features: ["use_localstorage_for_settings"],
