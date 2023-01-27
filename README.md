@@ -3,7 +3,8 @@ Main goal: fetch historical data, and create some backtesting tools & obtain res
 
 ### Setup
 1. Copy .env.example to .env
-2. make build
-3. make manage.py CMD=migrate
-4. make up
-5. Service should be up @ localhost:8000
+2. `git submodule update --init` [optional, if you have access to TradingView library]
+3. make build
+4. make manage.py CMD=migrate
+5. make up
+6. Service should be up @ localhost:8000
