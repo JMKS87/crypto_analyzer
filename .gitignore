@@ -200,4 +200,5 @@ dmypy.json
 .env.stage
 
 staticfiles/*
+staticfiles/charting_library
 !staticfiles/.gitkeep
