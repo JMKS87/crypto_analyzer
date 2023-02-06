@@ -39,3 +39,12 @@ class ChartAlarm(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     due = models.DateTimeField(default=None, null=True)
     fired = models.DateTimeField(default=None, null=True)
+
+
+class ChartLastUpdated(models.Model):
+    class Meta:
+        unique_together = (("ticker", "interval"),)
+
+    ticker = models.ForeignKey(to=Ticker, on_delete=models.CASCADE)
+    interval = models.DurationField(null=False)
+    last_updated = models.DateTimeField()

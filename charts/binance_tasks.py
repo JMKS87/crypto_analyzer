@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Optional
 
 from binance import Client
 from django.utils.timezone import make_aware
 
 from charts import binance_tools
 from charts.binance_tools import get_values
+from charts.misc import interval_to_timedelta
 from charts.models import Exchange, Ticker, Chart
 import logging
 
@@ -52,21 +53,6 @@ def add_binance_tickers() -> None:
     Ticker.objects.bulk_create(tickers_entries, ignore_conflicts=True)
 
 
-def _interval_to_timedelta(interval: str) -> timedelta:
-    """Valid interval units: m, h, d, w, M, eg. 5m, 4h"""
-    if interval.endswith("m"):
-        return timedelta(minutes=int(interval[:-1]))
-    elif interval.endswith("h"):
-        return timedelta(hours=int(interval[:-1]))
-    elif interval.endswith("d"):
-        return timedelta(days=int(interval[:-1]))
-    elif interval.endswith("w"):
-        return timedelta(weeks=int(interval[:-1]))
-    elif interval.endswith("M"):
-        raise NotImplemented("Months requires some complex logic, not needed for now")
-    raise ValueError("Unknown interval: <%s>", interval)
-
-
 def update_values(
     ticker: str,
     interval: str = Client.KLINE_INTERVAL_1DAY,
@@ -94,7 +80,7 @@ def update_values(
     chart_entries = (
         Chart(
             ticker=ticker_object,
-            interval=_interval_to_timedelta(interval),
+            interval=interval_to_timedelta(interval),
             timestamp=make_aware(round_time(datetime.fromtimestamp(k.open_time / 1000))),
             end_timestamp=make_aware(round_time(datetime.fromtimestamp(k.close_time / 1000))),
             open=float(k.open),
