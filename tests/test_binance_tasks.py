@@ -2,7 +2,8 @@ from datetime import timedelta
 
 import pytest
 
-from charts.binance_tasks import _interval_to_timedelta
+from charts.misc import interval_to_timedelta
+
 
 # TODO: imports not working
 @pytest.mark.parametrize(
@@ -19,7 +20,7 @@ def test_interval_to_timedelta(interval, expected):
     # given (via parameters)
 
     # when
-    result = _interval_to_timedelta(interval)
+    result = interval_to_timedelta(interval)
 
     # then
     assert result == expected

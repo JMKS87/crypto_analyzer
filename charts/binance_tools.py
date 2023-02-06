@@ -1,13 +1,11 @@
+import logging
 import os
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import lru_cache
 from typing import List, Iterator, Union
-import logging
 
 from binance import Client
-
-from charts.misc import timing
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +60,6 @@ def get_tickers() -> List[str]:
     return tickers
 
 
-@timing
 def get_values(
     ticker: str,
     interval: str = Client.KLINE_INTERVAL_1DAY,
@@ -70,6 +67,10 @@ def get_values(
     to: Union[datetime, str] = "1 Jan, 2100",
 ) -> Iterator[KlineData]:
     # TODO: maybe internal chunking by date of API requests
+    if isinstance(from_, datetime):
+        from_ = from_.strftime("%Y-%m-%d %H:%M")
+    if isinstance(to, datetime):
+        to = to.strftime("%Y-%m-%d %H:%M")
     klines = _get_client().get_historical_klines(
         ticker,
         interval,
