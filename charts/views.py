@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+from string import digits
 
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest, JsonResponse
@@ -7,7 +8,23 @@ from django.shortcuts import render
 
 from django.urls import reverse
 
+from charts.misc import interval_to_timedelta
 from charts.models import Exchange, Ticker, Chart
+
+SUPPORTED_RESOLUTIONS = [
+                "1",
+                "3",
+                "5",
+                "15",
+                "30",
+                "60",
+                "240",
+                "D",
+                "2D",
+                "3D",
+                "W"
+                "M"
+        ]
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -64,7 +81,7 @@ def tv_api_config(request: HttpRequest) -> HttpResponse:
             {"name": "Stock", "value": "stock"},
             {"name": "Index", "value": "index"},
         ],
-        "supported_resolutions": ["D"],  # , "2D", "3D", "W", "3W", "M", "6M"],
+        "supported_resolutions": SUPPORTED_RESOLUTIONS,
     }
     return JsonResponse(config)
 
@@ -88,9 +105,14 @@ def tv_api_symbols(request: HttpRequest) -> HttpResponse:
         "has_no_volume": False,
         "description": ticker,
         "type": "crypto",
-        "supported_resolutions": ["D"],  # TODO: , "2D", "3D", "W", "3W", "M", "6M"],
+        "supported_resolutions": SUPPORTED_RESOLUTIONS,
         "pricescale": 100,
         "ticker": ticker,
+        # available intervals @ backend, regardless of intervals available @ frontend
+        # (interpolated from available intervals)
+        "intraday-multipliers": [
+            "1",
+        ],
     }
 
     return JsonResponse(data)
@@ -100,6 +122,9 @@ def tv_api_history(request: HttpRequest) -> HttpResponse:
     ticker = request.GET.get("symbol")
     countback = int(request.GET.get("countback"))
     resolution = request.GET.get("resolution")
+    if resolution and resolution[-1].isdigit():
+        resolution += "m"
+    resolution = interval_to_timedelta(resolution)
     from_ = int(request.GET.get("from"))
     to = int(request.GET.get("to"))
     from_dt = datetime.fromtimestamp(from_)
@@ -113,6 +138,12 @@ def tv_api_history(request: HttpRequest) -> HttpResponse:
         .filter(timestamp__range=(from_dt, to_dt))
         .order_by("timestamp")
     )
+    # no data for selected time range => get last data
+    if not klines:
+        klines = (
+            Chart.objects.filter(ticker=ticker_object, interval=resolution)
+            .order_by("timestamp")[countback:]
+        )
     data = {
         "s": "ok",
         "t": [],
