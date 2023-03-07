@@ -21,7 +21,6 @@ def update_binance_tickers_1m():
 
 
 def run():
-    print(os.getcwd())
     logger.info("Scheduler process has started.")
     schedule.every(1).minute.do(update_binance_tickers_1m)
     while True:
