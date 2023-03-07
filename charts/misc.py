@@ -26,6 +26,8 @@ def interval_to_timedelta(interval: str) -> timedelta:
         return timedelta(hours=int(interval[:-1]))
     elif interval.endswith("d"):
         return timedelta(days=int(interval[:-1]))
+    elif interval.endswith("D"):
+        return timedelta(days=int(interval[:-1]))
     elif interval.endswith("w"):
         return timedelta(weeks=int(interval[:-1]))
     elif interval.endswith("M"):
