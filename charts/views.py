@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from charts.misc import interval_to_timedelta
 from charts.models import Exchange, Ticker, Chart
+from crypto_analyzer.strategy.simulation import simulate_simple_strategy
 
 SUPPORTED_RESOLUTIONS = [
                 "1",
@@ -186,3 +187,13 @@ def tv_api_search(request: HttpRequest) -> HttpResponse:
 
 def tv_chart(request: HttpRequest, ticker: str) -> HttpResponse:
     return render(request, "chart.html", context={"ticker": ticker})
+
+
+def simulate(request: HttpRequest, ticker: str) -> HttpResponse:
+    win = float(request.GET.get("win", 0.01))
+    loss = float(request.GET.get("loss", 0.005))
+    #TODO: from_, to from query params
+    results = simulate_simple_strategy(ticker, win=win, loss=loss, from_=None, to=None)
+    return JsonResponse(results)
+    # TODO template for result
+    # return render(request, "simulation_results.html", context={"ticker": ticker})
