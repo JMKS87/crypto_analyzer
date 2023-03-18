@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict
 from datetime import datetime
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Any
 
 from charts.models import Exchange, Ticker
 from charts.tools import iterate_klines
@@ -12,6 +12,7 @@ def simulate_simple_strategy(
         loss: float,
         from_: Optional[datetime],
         to: Optional[datetime],
+        capital: float = 1.0,
 ) -> Dict[str, Union[List[Dict], Dict]]:
     """
     Simulate one of the simplest strategies and return results.
@@ -20,6 +21,7 @@ def simulate_simple_strategy(
     entry: "now", (ie. always want to enter trade, immediately after exiting previous one),
         at next kline OPEN
     exit: win or loss approached, exit at next kline OPEN
+    Last entered trade (if active) is ignored.
     """
     from_ = from_ or datetime(year=2023, month=1, day=1)
     to = to or datetime(year=2023, month=1, day=5)
@@ -32,6 +34,7 @@ def simulate_simple_strategy(
                 "loss": loss,
                 "from_": from_,
                 "to": to,
+                "capital": capital,
              },
         "entries": [],
     }
@@ -56,9 +59,7 @@ def simulate_simple_strategy(
             exit = False
             entry.exit_time = kline.timestamp
             entry.exit_price = kline.open
-            results["entries"].append(
-                {**asdict(entry), **{"change_percent": entry.change_percent}}
-            )
+            results["entries"].append(entry)
             entry = None
             continue
         if kline.high >= entry.enter_price*win:
@@ -67,8 +68,6 @@ def simulate_simple_strategy(
         if kline.low <= entry.enter_price*loss:
             exit = True
             continue
-    # TODO: handle last opened trade (exit at kline.close probably)
-    # TODO: more statistics about completed trades, eg. wins/losses %, values, etc.
 
     return results
 
@@ -78,9 +77,17 @@ class Entry:
     enter_price: float
     exit_price: Optional[float] = None
     exit_time: Optional[datetime] = None
+    long: bool = True
+    size: float = 1.0
 
     @property
     def change_percent(self):
         if not self.exit_price:
             return None
         return ((self.exit_price - self.enter_price) / self.enter_price) * 100
+
+    def to_json_dict(self) -> Dict[str, Any]:
+        return {
+            **asdict(self),
+            **{"change_percent": self.change_percent},
+        }

@@ -1,6 +1,8 @@
 import time
+from dataclasses import asdict
 from datetime import datetime
 from string import digits
+from typing import Dict, Union, List
 
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest, JsonResponse
@@ -189,11 +191,59 @@ def tv_chart(request: HttpRequest, ticker: str) -> HttpResponse:
     return render(request, "chart.html", context={"ticker": ticker})
 
 
+def get_template_data(results: Dict[str, Union[List[Dict], Dict]]) -> Dict:
+    entries_no = len(results["entries"])
+    params = results["params"]
+    capital = params["capital"]
+    tr = 0
+    stats = {
+            "entries": entries_no,
+            "winners": 0,
+            "losers": 0,
+            "percent_win": None,
+            "total_return": None,
+            "total_return_percent": None,
+        }
+    data = {
+        "raw_data": results,
+        "params": params,
+        "stats": stats,
+            }
+
+    for entry in results["entries"]:
+        winner = (entry.enter_price < entry.exit_price) and entry.long
+        stats["winners"] += winner
+        tr += entry.change_percent/100 * entry.size
+
+    stats["total_return"] = tr
+    stats["total_return_percent"] = None if not tr \
+        else ((tr * capital) / capital) * 100
+    stats["losers"] = data["stats"]["entries"] - data["stats"]["winners"]
+    stats["percent_win"] = None if not entries_no \
+        else ((stats["winners"] / entries_no) * 100)
+    return data
+
 def simulate(request: HttpRequest, ticker: str) -> HttpResponse:
+    as_json = request.GET.get("json", False)
     win = float(request.GET.get("win", 0.01))
     loss = float(request.GET.get("loss", 0.005))
-    #TODO: from_, to from query params
-    results = simulate_simple_strategy(ticker, win=win, loss=loss, from_=None, to=None)
-    return JsonResponse(results)
-    # TODO template for result
-    # return render(request, "simulation_results.html", context={"ticker": ticker})
+    try:
+        from_ = datetime.strptime(request.GET.get("from"), "%Y-%m-%d")
+    except TypeError:
+        from_ = None
+    try:
+        to = datetime.strptime(request.GET.get("to"), "%Y-%m-%d")
+    except TypeError:
+        to = None
+    results = simulate_simple_strategy(ticker, win=win, loss=loss, from_=from_, to=to)
+
+    if as_json:
+        json_results = dict(results)
+        json_results["entries"] = [
+                entry.to_json_string()
+                for entry in json_results["entries"]
+        ]
+        return JsonResponse(json_results)
+
+    template_data = get_template_data(results)
+    return render(request, "simulation_results.html", context={"data": template_data})
