@@ -12,7 +12,7 @@ TICKER_KIND_CHOICES = [
     ('FundingRate', 'Funding Rate'),
     ('PredictedFundingRate', 'Predicted Funding Rate'),
     ('LongShortRatio', 'Long Short Ratio'),
-    ('LuquidationHistory', 'Liquidation History'),
+    ('LiquidationHistory', 'Liquidation History'),
 ]
 
 
@@ -62,6 +62,7 @@ class LongShortChart(models.Model):
 
     timestamp = models.DateTimeField(null=False)
     ticker = models.ForeignKey(to=Ticker, on_delete=models.CASCADE)
+    interval = models.DurationField(null=False)
     long = models.FloatField()
     short = models.FloatField()
 
