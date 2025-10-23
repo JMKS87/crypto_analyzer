@@ -13,10 +13,13 @@ from charts.tasks import update_binance_values
 
 logger = logging.getLogger(__name__)
 
+LOCAL_UPDATE = os.environ.get("LOCAL_UPDATE", "False").lower() == "true"
 TICKERS_UPDATE_1M: List[str] = os.environ.get("TICKERS_UPDATE_1M", "").split(",")
 
 
 def update_binance_tickers_1m():
+    if not LOCAL_UPDATE:
+        return
     update_binance_values.delay(intervals=['1m'], tickers=TICKERS_UPDATE_1M)
 
 
