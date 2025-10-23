@@ -17,13 +17,10 @@ def get_echanges():
 def get_futures_markets():
     response = requests.get("https://api.coinalyze.net/v1/future-markets", headers=HEADERS)
     js = response.json()
-    binance_symbols = []
+    markets = []
     for el in js:
-        if el['base_asset'] == 'BTC' and el["exchange"] == "A":
-            binance_symbols.append(el['symbol'])
-            print(el)
-    print('a')
-    return binance_symbols
+        markets.append(el)
+    return markets
 
 def get_predicted_funding_rate_history(symbols: Iterable):
     params = {

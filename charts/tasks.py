@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from charts.binance_tasks import add_binance, add_binance_tickers, update_values
 from charts.charts_constants import DEFAULT_KLINES_TO_FETCH, BINANCE_START_TIME
+from charts.coinalyze_tasks import add_coinalyze_exchanges, add_coinalyze_futures_markets_tickers
 from charts.misc import interval_to_timedelta
 from charts.models import ChartLastUpdated, Exchange, Ticker
 
@@ -20,7 +21,14 @@ def populate_binance_tickers() -> None:
     add_binance_tickers()
 
 
+@shared_task
+def populate_coinalyze_tickers() -> None:
+    add_coinalyze_exchanges()
+    add_coinalyze_futures_markets_tickers()
+
+
 def _determine_dates_to_update(ticker: str, interval: str, exchange: str = "binance") -> Tuple[datetime, datetime, ChartLastUpdated]:
+    #TODO: decouple from default=binance
     exchange_object = Exchange.objects.get(name=exchange)
     ticker_object = Ticker.objects.get(exchange=exchange_object, name=ticker)
     interval_timedelta = interval_to_timedelta(interval)
