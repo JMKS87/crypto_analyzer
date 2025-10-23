@@ -202,3 +202,5 @@ dmypy.json
 staticfiles/*
 staticfiles/charting_library
 !staticfiles/.gitkeep
+
+secrets/*.txt

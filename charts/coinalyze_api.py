@@ -3,13 +3,16 @@ from typing import Iterable
 
 import requests
 
-API_KEY = os.environ.get("COINALYZE_API_KEY")
+API_KEY_LOCATION = os.path.join("secrets", os.environ.get("COINALYZE_API_KEY_LOCATION"))
+with open(API_KEY_LOCATION, "r") as inf:
+    API_KEY = inf.read().strip()
 HEADERS = {"api_key": API_KEY}
 
 def get_echanges():
     response = requests.get("https://api.coinalyze.net/v1/exchanges", headers=HEADERS)
     js = response.json()
     print('a')
+
 
 def get_futures_markets():
     response = requests.get("https://api.coinalyze.net/v1/future-markets", headers=HEADERS)
