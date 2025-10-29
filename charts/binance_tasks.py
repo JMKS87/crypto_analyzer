@@ -5,7 +5,7 @@ from binance import Client
 from django.utils.timezone import make_aware
 
 from charts import binance_tools
-from charts.binance_tools import get_values
+from charts.binance_tools import binance_get_values
 from charts.misc import interval_to_timedelta, round_time
 from charts.models import Exchange, Ticker, Chart
 import logging
@@ -27,7 +27,7 @@ def add_binance_tickers() -> None:
     Ticker.objects.bulk_create(tickers_entries, ignore_conflicts=True)
 
 
-def update_values(
+def update_values_binance(
     ticker: str,
     interval: str = Client.KLINE_INTERVAL_1DAY,
     date_start: Optional[datetime] = None,
@@ -50,7 +50,7 @@ def update_values(
         get_values_kwargs["from_"] = date_start
     if date_end:
         get_values_kwargs["to"] = date_end
-    klines_iterator = get_values(**get_values_kwargs)
+    klines_iterator = binance_get_values(**get_values_kwargs)
     chart_entries = (
         Chart(
             ticker=ticker_object,

@@ -60,7 +60,7 @@ def get_tickers() -> List[str]:
     return tickers
 
 
-def get_values(
+def binance_get_values(
     ticker: str,
     interval: str = Client.KLINE_INTERVAL_1DAY,
     from_: Union[datetime, str] = "17 Sep, 2017",
@@ -145,5 +145,5 @@ if __name__ == '__main__':
         print(data)
     # basic usage for fiddling with API
     logging.basicConfig(level=logging.INFO)
-    values = list(get_values("BTCUSDT", Client.KLINE_INTERVAL_1DAY))
+    values = list(binance_get_values("BTCUSDT", Client.KLINE_INTERVAL_1DAY))
     print(f"ready, fetched {len(values)} values")

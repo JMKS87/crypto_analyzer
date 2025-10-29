@@ -51,6 +51,7 @@ class Chart(models.Model):
     high = models.FloatField()
     low = models.FloatField()
     close = models.FloatField()
+    #TODO: nullable for Coinalyze specific klines, or just put 0
     volume = models.FloatField()
 
 
