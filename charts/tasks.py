@@ -64,7 +64,7 @@ def _determine_dates_to_update_binance(ticker: str, interval: str, exchange: str
 
 def _determine_dates_to_update_coinalyze(ticker: str, interval: str) -> Tuple[datetime, datetime, ChartLastUpdated]:
     #TODO: think about merging this with _determine_dates_to_update_binance
-    ticker_object = Ticker.objects.get(name=ticker)
+    ticker_object = Ticker.objects.get(name=ticker, kind="Futures")
     interval_timedelta = interval_to_timedelta(interval)
     chart_last_updated, created = ChartLastUpdated.objects.get_or_create(
         ticker=ticker_object,
@@ -140,16 +140,16 @@ def update_coinalyze_values(
     date_end: Optional[datetime] = None,
 ) -> None:
     tracked_exchange_codes = _get_coinalyze_tracked_exchanges_codes()
-    tickers = Ticker.objects.filter(
+    tickers_objects = Ticker.objects.filter(
         additional_info__base_asset__in=base_assets,
         additional_info__exchange__in=tracked_exchange_codes,
         additional_info__source="coinalyze",
         kind="Futures",
     )
-    for ticker in tickers:
+    for ticker_object in tickers_objects:
         for interval in intervals:
             _update_coinalyze_values.delay(
-                ticker=ticker,
+                ticker=ticker_object.name,
                 interval=interval,
                 date_start=date_start,
                 date_end=date_end,
