@@ -129,9 +129,9 @@ def coinalyze_get_values(
 
 if __name__ == "__main__":
     # get_echanges()
-    coinalyze_symbols = get_futures_markets()
-    btc_tickers = [s["symbol"] for s in coinalyze_symbols if (s["base_asset"] == "BTC" and s["symbol"].endswith(".A"))]
-    print(len(btc_tickers))
-    get_predicted_funding_rate_history_single('BTCUSD_PERP.A')
+    # coinalyze_symbols = get_futures_markets()
+    # btc_tickers = [s["symbol"] for s in coinalyze_symbols if (s["base_asset"] == "BTC" and s["symbol"].endswith(".A"))]
+    # print(len(btc_tickers))
     # get_current_predicted_funding_rate(binance_symbols)
     # get_predicted_funding_rate_history_try()
+    get_predicted_funding_rate_history_single('BTCUSD_PERP.A')

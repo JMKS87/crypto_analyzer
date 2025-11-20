@@ -6,6 +6,7 @@ asgiref==3.4.1
 async-timeout==4.0.1
 atomicwrites==1.4.1
 attrs==21.2.0
+backtesting==0.6.5
 billiard==4.2.0
 black==21.11b1
 Brotli==1.0.9
@@ -61,6 +62,7 @@ schedule==1.1.0
 setuptools==77.0.3
 six==1.16.0
 sqlparse==0.4.1
+TA-Lib==0.6.8
 toml==0.10.2
 tomli==1.2.2
 typing_extensions==4.0.0
