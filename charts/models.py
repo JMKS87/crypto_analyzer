@@ -28,7 +28,7 @@ class Ticker(models.Model):
 
     name = models.CharField(max_length=255, unique=False)
     exchange = models.ForeignKey(to=Exchange, on_delete=models.CASCADE)
-    kind = models.CharField(max_length=255, choices=TICKER_KIND_CHOICES, default='spot')
+    kind = models.CharField(max_length=255, choices=TICKER_KIND_CHOICES, default='Spot')
 
     additional_info = models.JSONField(default=dict)
 
