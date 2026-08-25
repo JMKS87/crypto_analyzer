@@ -24,6 +24,7 @@ def hello(request):
     return HttpResponse("Hello world! Crypto-analyzer in progress!")
 
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index),
@@ -34,7 +35,10 @@ urlpatterns = [
     path("tv_api/history", views.tv_api_history),
     path("tv_api/search", views.tv_api_search),
     path("exchange_<str:exchange>/<str:ticker>", views.ticker_view),
+    path("exchange_<str:exchange>/<str:ticker>/export", views.ticker_export_page, name='ticker_export_page'),
+    path("exchange_<str:exchange>/<str:ticker>/export_download", views.ticker_export_download, name='ticker_export_download'),
     path("exchange_<str:exchange>", views.exchange_view),
+    path("exchange_<str:exchange>/<str:ticker>/import", views.ticker_import, name='ticker_import'),
     path("tv_chart/<str:ticker>", views.tv_chart, name="tv_chart"),
     path("simulate/<str:ticker>", views.simulate, name="simulate"),
 ]

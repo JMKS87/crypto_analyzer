@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Export Ticker Data</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Export Ticker Data</h1>
+        <form method="GET" id="exportForm">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="start_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="end_date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="interval">Interval:</label>
+                <select id="interval" name="interval" required>
+                    <option value="">-- Select Interval --</option>
+                    <option value="1m">1 Minute</option>
+                    <option value="5m">5 Minutes</option>
+                    <option value="15m">15 Minutes</option>
+                    <option value="30m">30 Minutes</option>
+                    <option value="1h">1 Hour</option>
+                    <option value="4h">4 Hours</option>
+                    <option value="1d">1 Day</option>
+                    <option value="1w">1 Week</option>
+                    <option value="1M">1 Month</option>
+                </select>
+            </div>
+
+            <button type="submit">Download Data</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('exportForm');
+        
+        // Set default dates (last 30 days)
+        const endDate = new Date();
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 30);
+        
+        document.getElementById('startDate').valueAsDate = startDate;
+        document.getElementById('endDate').valueAsDate = endDate;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const interval = document.getElementById('interval').value;
+            
+            if (!startDate || !endDate || !interval) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Extract exchange and ticker from URL path
+            const pathParts = window.location.pathname.split('/').filter(p => p);
+            const exchangeFull = pathParts[0]; // "exchange_binance"
+            const exchange = exchangeFull.replace('exchange_', '');
+            const ticker = pathParts[1]; // "BTCUSDT"
+            
+            // Construct the URL
+            const url = `/exchange_${exchange}/${ticker}/export_download?start_date=${startDate}&end_date=${endDate}&interval=${interval}`;
+            
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>
