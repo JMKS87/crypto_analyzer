@@ -10,6 +10,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import render
+from django.middleware.csrf import get_token
 
 from django.urls import reverse
 
@@ -365,11 +366,13 @@ def ticker_import(request: HttpRequest, exchange: str, ticker: str) -> HttpRespo
     POST: accepts file field 'file' (multipart/form-data). Returns a plain text summary.
     """
     if request.method == "GET":
-        # minimal upload form
+        # minimal upload form with CSRF token
+        token = get_token(request)
         html = (
             f"<html><body>"
             f"<h1>Import for {exchange}/{ticker}</h1>"
             f"<form method='POST' enctype='multipart/form-data'>"
+            f"<input type='hidden' name='csrfmiddlewaretoken' value='{token}'>"
             f"<input type='file' name='file' accept='.csv' required>"
             f"<button type='submit'>Upload</button>"
             f"</form></body></html>"
